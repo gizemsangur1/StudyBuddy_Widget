@@ -4,7 +4,8 @@ const path = require("path");
 function createWindow() {
   const width = 300;
   const height = 300;
-  const { width: screenW, height: screenH } = screen.getPrimaryDisplay().workAreaSize;
+  const { width: screenW, height: screenH } =
+    screen.getPrimaryDisplay().workAreaSize;
 
   const win = new BrowserWindow({
     width,
@@ -15,7 +16,11 @@ function createWindow() {
     transparent: true,
     alwaysOnTop: true,
     hasShadow: false,
+    titleBarStyle: "hidden",
+    type: "toolbar",
+    show: false,
     resizable: false,
+    skipTaskbar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -23,6 +28,18 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, "src/index.html"));
+  win.on("blur", () => {
+    setTimeout(() => {
+      if (!win.isDestroyed()) {
+        win.setBounds(win.getBounds()); 
+      }
+    }, 100);
+  });
+
+  win.once("ready-to-show", () => {
+    win.show();
+  });
+  win.setTitle("");
 }
 
 app.whenReady().then(createWindow);
