@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Study Buddy</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+
+      .robot {
+        width: 200px;
+        height: 300px;
+        position: relative;
+        margin: auto;
+        top: 10px;
+        -webkit-app-region: drag;
+      }
+
+      .head {
+        width: 140px;
+        height: 90px;
+        background: linear-gradient(to bottom, #eee, #ccc);
+        border-radius: 50px;
+        position: relative;
+        margin: auto;
+      }
+
+      .eye {
+        width: 15px;
+        height: 30px;
+        background: black;
+        border-radius: 50%;
+        position: absolute;
+        top: 25px;
+      }
+
+      .eye.left {
+        left: 30px;
+      }
+
+      .eye.right {
+        right: 30px;
+      }
+
+      .mouth {
+        width: 40px;
+        height: 8px;
+        background: black;
+        border-radius: 10px;
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .face-screen {
+        -webkit-app-region: no-drag;
+        position: absolute;
+        bottom: 10px;
+        left: 12px;
+        width: 120px;
+        height: 70px;
+        background: black;
+        color: white;
+        font-family: monospace;
+        font-size: 16px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 50px;
+        display: none;
+        z-index: -10;
+      }
+
+      .body {
+        width: 100px;
+        height: 150px;
+        background: #ddd;
+        border-radius: 50%;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .arm {
+        width: 30px;
+        height: 80px;
+        background: #ccc;
+        border-radius: 20px;
+        position: absolute;
+        top: 10px;
+      }
+
+      .left-arm {
+        left: -30px;
+        transform: rotate(20deg);
+      }
+
+      .right-arm {
+        right: -30px;
+        transform: rotate(-20deg);
+      }
+
+      #pomodoro-button {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 16px;
+        font-size: 14px;
+        background: #444;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="robot">
+      <div class="head">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+        <div class="face-screen" id="face-screen">25:00</div>
+      </div>
+      <div class="body">
+        <div class="arm left-arm"></div>
+        <div class="arm right-arm"></div>
+      </div>
+    </div>
+    <button id="pomodoro-button">Start Pomodoro</button>
+
+    <script>
+      const screen = document.getElementById("face-screen");
+      const button = document.getElementById("pomodoro-button");
+
+      let interval = null;
+      let isRunning = false;
+      let minutes = 25;
+      let seconds = 0;
+
+      function updateDisplay() {
+        const m = minutes.toString().padStart(2, "0");
+        const s = seconds.toString().padStart(2, "0");
+        screen.textContent = `${m}:${s}`;
+      }
+
+      function startPomodoro() {
+        screen.style.display = "block";
+        screen.style.zIndex = "10";
+        updateDisplay();
+
+        interval = setInterval(() => {
+          if (seconds === 0) {
+            if (minutes === 0) {
+              clearInterval(interval);
+              screen.textContent = "Done!";
+              button.textContent = "Start Pomodoro";
+              isRunning = false;
+              return;
+            } else {
+              minutes--;
+              seconds = 59;
+            }
+          } else {
+            seconds--;
+          }
+          updateDisplay();
+        }, 1000);
+      }
+
+      function stopPomodoro() {
+        clearInterval(interval);
+        screen.style.display = "none";
+        screen.style.zIndex = "-10";
+      }
+
+      button.addEventListener("click", () => {
+        if (!isRunning) {
+          minutes = 25;
+          seconds = 0;
+          startPomodoro();
+          button.textContent = "Stop Pomodoro";
+        } else {
+          stopPomodoro();
+          button.textContent = "Start Pomodoro";
+        }
+        isRunning = !isRunning;
+      });
+    </script>
+  </body>
+</html>
